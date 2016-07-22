@@ -22,60 +22,183 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-  </head>
-  <body>
 
-    <nav class="navbar navbar-default">
+    <style>
+      body {
+        position: relative; 
+      }
+      .footer {margin: 25px;}
+      .manual-header {padding-top:50px; padding-bottom:50px; color: #fff; }
+      #introduction {background-color: #1E88E5;}
+      #programs {background-color: #673ab7;}
+      #programs-re {background-color: #ff9800;}
+      #example1 {background-color: #00bcd4;}
+      #example2 {background-color: #009688;}
+    </style>
+  </head>
+
+  <body data-spy="scroll" data-target=".navbar" data-offset="50">
+    <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>                        
           </button>
-          <a class="navbar-brand" href="index.html"><span class="glyphicon glyphicon-education"></span> GNU sed</a>
-          <!-- <a class="navbar-brand" href="#">GNU sed</a> -->
+          <a class="navbar-brand" href="index.html"><span class="glyphicon glyphicon-education"></span> GNU sed REPL</a>
         </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="#"><span class="glyphicon glyphicon-book"></span> Help</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+        <div>
+          <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+              <li><a href="#introduction">Introduction</a></li>
+              <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Programs <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#programs">Basic</a></li>
+                  <li><a href="#programs-re">Regular Expressions</a></li>
+                </ul>
+              </li>
 
-    <div class="container-fluid">
+              <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Section 4 <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#example1">Example 1</a></li>
+                  <li><a href="#example2">Example 2</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>    
+
+    <div id="introduction" class="container-fluid manual-header">
+        <h1>1. sed.js, a stream editor</h1>
+      <p>GNU sed stream editor compiled to JavaScript </p>
+
+      <p>May be invoked with the following command-line options:</p>
+
       <ul>
         <li>
           <p>
-            <a href='https://gist.github.com/anonymous/3ff3d473993c0410363d7af65bf4f16a'>Gist</a>
-             - query string examples:
-            <br/>
-            <a href='index.html?&amp;gist=3ff3d473993c0410363d7af65bf4f16a'>?<b>gist</b>=3ff3d473993c0410363d7af65bf4f16a</a>
-            <br/>
-            <a href='index.html?user=anonymous&amp;gist=3ff3d473993c0410363d7af65bf4f16a&amp;stdin=stdin&amp;args=args'>?<b>user</b>=anonymous&amp;<b>gist</b>=3ff3d473993c0410363d7af65bf4f16a&amp;<b>stdin</b>=stdin&amp;<b>args</b>=args</a>
+            --version<br/>
+              Print out the version of sed that is being run and a copyright notice, then exit.
           </p>
         </li>
         <li>
           <p>
-            <a href='https://www.gnu.org/software/sed/manual/sed.html'>Official GNU sed manual</a>
+            --help<br/>
+              Print a usage message briefly summarizing these command-line options and the bug-reporting address, then exit.
+          </p>
+        </li>
+
+        <li>
+          <p>
+          -n<br/>
+          --quiet<br/>
+          --silent<br/>
+              By default, sed prints out the pattern space at the end of each cycle through the script. These options disable this automatic printing, and sed only produces output when explicitly told to via the p command. 
+          </p>
+        </li> 
+        <li>
+          <p>
+            -e script<br/>
+            --expression=script<br/>
+                Add the commands in script to the set of commands to be run while processing the input. 
           </p>
         </li>
         <li>
           <p>
-            <a href='http://www.grymoire.com/Unix/sed.html'>Tutorial</a>
+            --posix<br/>
+                GNU sed includes several extensions to POSIX sed. In order to simplify writing portable scripts, this option disables all the extensions that this manual documents, including additional commands. Most of the extensions accept sed programs that are outside the syntax mandated by POSIX, but some of them (such as the behavior of the N command described in see Reporting Bugs) actually violate the standard. If you want to disable only the latter kind of extension, you can set the POSIXLY_CORRECT variable to a non-empty value. 
           </p>
         </li>
         <li>
-          To be continue...
+          <p>
+            -r<br/>
+            --regexp-extended<br/>
+                Use extended regular expressions rather than basic regular expressions. Extended regexps are those that egrep accepts; they can be clearer because they usually have less backslashes, but are a GNU extension and hence scripts that use them are not portable. See Extended regular expressions. 
+          </p>
         </li>
-      <ul>
+      </ul>
+
+      <p>
+        If no -e, --expression options are given on the command-line, then the first non-option argument on the command line is taken to be the script to be executed.
+      </p>
+    </div>
+    <div id="programs" class="container-fluid manual-header">
+      <h1>2. sed.js programs</h1>
+      <p>
+      A sed program consists of one or more sed commands, passed in by one or more of the -e, --expression options, or the first non-option argument if zero of these options are used.
+      </p>
+      <p>
+      Commands within a script can be separated by semicolons (;) or newlines (ASCII 10). Some commands, due to their syntax, cannot be followed by semicolons working as command separators and thus should be terminated with newlines or be placed at the end of a script. Commands can also be preceded with optional non-significant whitespace characters.
+      </p>
+      <p>
+      Each sed command consists of an optional address or address range, followed by a one-character command name and any additional command-specific code. 
+      </p>
+    </div>
+    <div id="programs-re" class="container-fluid manual-header">
+      <h1>2.1. Sed Regular Expressions</h1>
+      <table class='table table-bordered table-condensed'><tbody><tr>
+      <td> <code>^</code> </td>
+      <td>matches the beginning of the line </td>
+      </tr><tr>
+      <td> <code>$</code> </td>
+      <td>matches the end of the line </td>
+      </tr><tr>
+      <td><code>.</code></td>
+      <td>Matches any single character</td>
+      </tr><tr>
+      <td><code>(character)*</code></td>
+      <td>match arbitrarily many occurences of (character)</td>
+      </tr><tr>
+      <td><code>(character)?</code></td>
+      <td>Match 0 or 1 instance of (character)</td>
+      </tr><tr>
+      <td><code>[abcdef]</code></td>
+      <td>Match any character enclosed in [] (in this instance, a b c d e or f)
+      ranges of characters such as <code>[a-z]</code> are permitted.
+      </td>
+      </tr><tr>
+      <td><code>[^abcdef]</code></td>
+      <td>Match any character <em>NOT</em> enclosed in [] (in this instance, any character other than a b c d e or f)</td>
+      </tr><tr>
+      <td><code>(character)\{m,n\}</code></td>
+      <td>Match m-n repetitions of (character)</td>
+      </tr><tr>
+      <td><code>(character)\{m,\}</code></td>
+      <td>Match m or more repetitions of (character)</td>
+      </tr><tr>
+      <td><code>(character)\{,n\}</code></td>
+      <td>Match n or less (possibly 0) repetitions of (character)</td>
+      </tr><tr>
+      <td><code>(character)\{n\}</code></td>
+      <td>Match exactly n repetitions of (character)</td>
+      </tr><tr>
+      <td><code>\(expression\)</code></td>
+      <td>Group operator</td>
+      </tr><tr>
+      <td><code>\n</code></td>
+      <td>Backreference - matches nth group</td>
+      </tr><tr>
+      <td><code>expression1\|expression2</code></td>
+      <td>Matches expression1 or expression 2
+      </td>
+      </tr></tbody></table>
+    </div>
+    <div id="example1" class="container-fluid manual-header">
+      <h1>TODO</h1>
+      <p>hello</p>
+    </div>
+    <div id="example2" class="container-fluid manual-header">
+      <h1>TODO</h1>
+      <p>hello</p>
     </div>
 
     <footer class="footer">
-      <div class="container-fluid">
-        <p class="text-muted text-center">Designed and maintained by <a href="mailto:o.mazko%20%5Bat%5D%20mail.ru?subject=sed.js"  rel="nofollow" onmouseover="var split = this.href.split('?');  split[0] = split[0].replace('%20%5Bat%5D%20','@'); this.href = split.join('?');">Oleg Mazko</a></p>
+      <div class="container-fluid text-muted text-center">
+        Designed and maintained by <a href="mailto:o.mazko%20%5Bat%5D%20mail.ru?subject=sed.js"  rel="nofollow" onmouseover="var split = this.href.split('?');  split[0] = split[0].replace('%20%5Bat%5D%20','@'); this.href = split.join('?');">Oleg Mazko</a>
       </div>
     </footer>
 

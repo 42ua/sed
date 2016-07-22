@@ -48,7 +48,7 @@
   }
 
   var user = getParameterByName('user') || 'anonymous',
-    gistId = getParameterByName('gist') || '3ff3d473993c0410363d7af65bf4f16a';
+    gistId = getParameterByName('gist') || 'a231d7675d0bf638c7f399c76d80f32b';
 
   if (user && gistId) {
     var stdinGist = getParameterByName('stdin') || 'stdin',
