@@ -4,28 +4,25 @@
 
   var parseId;
 
-  function id(i) {
-      return document.getElementById(i);
-  }
-  function parse(delay) {
-      if (parseId) {
-          window.clearTimeout(parseId);
-      }
+  function parse() {
+    if (parseId) {
+      clearTimeout(parseId);
+    }
 
-      parseId = window.setTimeout(function () {
-        var input = id("sed-stdin").value;
-        var args = id("sed-cmd").value;
-        var output = fn_gnu_sed(input, args);
-        id("sed-stdout").value = output.replace(/\n$/, "");
-      }, delay || 555);
+    parseId = setTimeout(function () {
+      var input = $("#sed-stdin").val(),
+          args = $("#sed-cmd").val(),
+          output = fn_gnu_sed(input, args);
+      $("#sed-stdout").val(output.replace(/\n$/, ""));
+    }, 333);
   }
-  window.onload = function () {
-      var update = function() { parse(); };
-      id("sed-stdin").onkeyup = update;
-      id("sed-cmd").onkeyup = update;
-      parse();
-  };
+  $(function() {
+    $("#sed-stdin").keyup(parse);
+    $("#sed-cmd").keyup(parse);
+  });
 })();
+
+/* options */
 
 (function() {
   $(".sed-options.dropdown-menu li a").click(function() {
@@ -37,7 +34,7 @@
   });
 })();
 
-/* Gist */
+/* Gist load or default */
 
 (function() {
   function getParameterByName(name, url) {
@@ -51,15 +48,21 @@
   }
 
   var user = getParameterByName('user') || 'anonymous',
-    gistId = getParameterByName('gist') || '5ff713738952b2989abae18e72f1752e';
+    gistId = getParameterByName('gist') || '3ff3d473993c0410363d7af65bf4f16a';
 
   if (user && gistId) {
     var stdinGist = getParameterByName('stdin') || 'stdin',
-        argsGist = getParameterByName('args') || 'args';
+        argsGist = getParameterByName('args') || 'args',
+        doc_ready = $.Deferred();
+
+    /* http://stackoverflow.com/q/10326398 */
+
+    $(doc_ready.resolve);
 
     $.when( 
       $.get( 'https://gist.githubusercontent.com/' + user + '/' + gistId + '/raw/' + stdinGist ), 
-      $.get( 'https://gist.githubusercontent.com/' + user + '/' + gistId + '/raw/' + argsGist ) )
+      $.get( 'https://gist.githubusercontent.com/' + user + '/' + gistId + '/raw/' + argsGist ),
+      doc_ready )
     .then(function( stdin, args ) {
       var rows = args[0].split(/\r\n|\r|\n/).length;
       $("#sed-cmd").val(args[0]).attr("rows", rows).css({"height": rows > 1 ? "auto" : "34px"});
@@ -73,6 +76,8 @@
     });
   }
 })();
+
+/* Gist API */
 
 (function() {
   $("li a.gist-api").click(function() {
