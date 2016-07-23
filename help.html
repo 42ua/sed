@@ -29,11 +29,12 @@
       }
       .footer {margin: 25px;}
       .manual-header {padding-top:50px; padding-bottom:50px; color: #fff; }
-      #introduction {background-color: #1E88E5;}
-      #programs {background-color: #673ab7;}
-      #programs-re {background-color: #ff9800;}
-      #example1 {background-color: #00bcd4;}
-      #example2 {background-color: #009688;}
+
+      #introduction {background-color: #0f4472;}
+      #programs {background-color: #331d5b;}
+      #programs-lines {background-color: #7f4c00;}
+      #programs-re {background-color: #005e6a;}
+      #practice {background-color: #009688;}
     </style>
   </head>
 
@@ -53,19 +54,14 @@
           <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
               <li><a href="#introduction">Introduction</a></li>
-              <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Programs <span class="caret"></span></a>
+              <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Theory <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#programs">Basic</a></li>
+                  <li><a href="#programs">Programs</a></li>
+                  <li><a href="#programs-lines">Selecting lines</a></li>
                   <li><a href="#programs-re">Regular Expressions</a></li>
                 </ul>
               </li>
-
-              <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Section 4 <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li><a href="#example1">Example 1</a></li>
-                  <li><a href="#example2">Example 2</a></li>
-                </ul>
-              </li>
+              <li><a href="#practice">Practice</a></li>
             </ul>
           </div>
         </div>
@@ -73,7 +69,7 @@
     </nav>    
 
     <div id="introduction" class="container-fluid manual-header">
-        <h1>1. sed.js, a stream editor</h1>
+        <h1>1. sed.js</h1>
       <p>GNU sed stream editor compiled to JavaScript </p>
 
       <p>May be invoked with the following command-line options:</p>
@@ -81,117 +77,322 @@
       <ul>
         <li>
           <p>
-            --version<br/>
+            <code>--version</code><br/>
               Print out the version of sed that is being run and a copyright notice, then exit.
           </p>
         </li>
         <li>
           <p>
-            --help<br/>
+            <code>--help</code><br/>
               Print a usage message briefly summarizing these command-line options and the bug-reporting address, then exit.
           </p>
         </li>
 
         <li>
           <p>
-          -n<br/>
-          --quiet<br/>
-          --silent<br/>
+          <code>-n</code>
+          <code>--quiet</code>
+          <code>--silent</code><br/>
               By default, sed prints out the pattern space at the end of each cycle through the script. These options disable this automatic printing, and sed only produces output when explicitly told to via the p command. 
           </p>
         </li> 
         <li>
           <p>
-            -e script<br/>
-            --expression=script<br/>
+            <code>-e script</code>
+            <code>--expression=script</code><br/>
                 Add the commands in script to the set of commands to be run while processing the input. 
           </p>
         </li>
         <li>
           <p>
-            --posix<br/>
+            <code>--posix</code><br/>
                 GNU sed includes several extensions to POSIX sed. In order to simplify writing portable scripts, this option disables all the extensions that this manual documents, including additional commands. Most of the extensions accept sed programs that are outside the syntax mandated by POSIX, but some of them (such as the behavior of the N command described in see Reporting Bugs) actually violate the standard. If you want to disable only the latter kind of extension, you can set the POSIXLY_CORRECT variable to a non-empty value. 
           </p>
         </li>
         <li>
           <p>
-            -r<br/>
-            --regexp-extended<br/>
+            <code>-r</code>
+            <code>--regexp-extended</code><br/>
                 Use extended regular expressions rather than basic regular expressions. Extended regexps are those that egrep accepts; they can be clearer because they usually have less backslashes, but are a GNU extension and hence scripts that use them are not portable. See Extended regular expressions. 
           </p>
         </li>
       </ul>
 
       <p>
-        If no -e, --expression options are given on the command-line, then the first non-option argument on the command line is taken to be the script to be executed.
+        If no <code>-e</code> <code>--expression</code> options are given on the command-line, then the first non-option argument on the command line is taken to be the script to be executed.
       </p>
     </div>
     <div id="programs" class="container-fluid manual-header">
-      <h1>2. sed.js programs</h1>
+      <h1>2. Programs</h1>
       <p>
-      A sed program consists of one or more sed commands, passed in by one or more of the -e, --expression options, or the first non-option argument if zero of these options are used.
+      A sed program consists of one or more sed commands, passed in by one or more of the <code>-e</code> <code>--expression</code> options, or the first non-option argument if zero of these options are used.
       </p>
       <p>
-      Commands within a script can be separated by semicolons (;) or newlines (ASCII 10). Some commands, due to their syntax, cannot be followed by semicolons working as command separators and thus should be terminated with newlines or be placed at the end of a script. Commands can also be preceded with optional non-significant whitespace characters.
+      Commands within a <b>script</b> can be separated by semicolons (;) or newlines (ASCII 10). Some commands, due to their syntax, cannot be followed by semicolons working as command separators and thus should be terminated with newlines or be placed at the end of a <b>script</b>. Commands can also be preceded with optional non-significant whitespace characters.
       </p>
       <p>
       Each sed command consists of an optional address or address range, followed by a one-character command name and any additional command-specific code. 
       </p>
+
+      <p>
+      sed maintains two data buffers: the active <b>pattern</b> space, and the auxiliary <b>hold</b> space. Both are initially empty.
+      </p>
+      <p>
+      sed operates by performing the following cycle on each line of input: first, sed reads one line from the input stream, removes any trailing newline, and places it in the pattern space. Then commands are executed; each command can have an address associated to it: addresses are a kind of condition code, and a command is only executed if the condition is verified before the command is to be executed.
+      </p>
+      <p>
+      When the end of the script is reached, unless the -n option is in use, the contents of pattern space are printed out to the output stream, adding back the trailing newline if it was removed. Then the next cycle starts for the next input line.
+      </p>
+      <p>
+      Unless special commands (like ‘D’) are used, the pattern space is deleted between two cycles. The hold space, on the other hand, keeps its data between cycles (see commands ‘h’, ‘H’, ‘x’, ‘g’, ‘G’ to move data between both buffers). 
+      </p>
+
     </div>
+
+    <div id="programs-lines" class="container-fluid manual-header">
+      <h1>2.1. Selecting lines</h1>
+
+      <p>
+        Addresses in a sed script can be in any of the following forms:
+      </p>
+      <ul>
+        <li>
+          <p>
+          <code>number</code><br/>
+              Specifying a line number will match only that line in the input.
+          </p>
+        </li>
+        <li>
+          <p>
+          <code>first~step</code><br/>
+              This GNU extension matches every <b>step</b>th line starting with line <b>first</b>. In particular, lines will be selected when there exists a non-negative <b>n</b> such that the current line-number equals <b>first + (n * step)</b>. Thus, to select the odd-numbered lines, one would use <code>1~2</code>; to pick every third line starting with the second, <code>2~3</code> would be used; to pick every fifth line starting with the tenth, use <code>10~5</code>; and <code>50~0</code> is just an obscure way of saying 50.
+          </p>
+        </li>
+        <li>
+          <p>
+          <code>$</code><br/>
+              This address matches the last line of input.
+          </p>
+        </li>
+        <li>
+          <p>
+          <code>/regexp/</code><br/>
+              This will select any line which matches the regular expression <b>regexp</b>. If <b>regexp</b> itself includes any / characters, each must be escaped by a backslash (\).
+          </p>
+        </li>
+        <li>
+          <p>
+          <code>\%regexp%</code><br/>
+              (The % may be replaced by any other single character.)
+
+              This also matches the regular expression <b>regexp</b>, but allows one to use a different delimiter than /. This is particularly useful if the <b>regexp</b> itself contains a lot of slashes, since it avoids the tedious escaping of every /. If <b>regexp</b> itself includes any delimiter characters, each must be escaped by a backslash (\).
+          </p>
+        </li>
+        <li>
+          <p>
+          <code>/regexp/I</code>
+          <code>\%regexp%I</code><br/>
+              The I modifier to regular-expression matching is a GNU extension which causes the <b>regexp</b> to be matched in a case-insensitive manner.
+          </p>
+        </li>
+        <li>
+          <p>
+          <code>/regexp/M</code>
+          <code>\%regexp%M</code><br/>
+              The M modifier to regular-expression matching is a GNU sed extension which causes <b>^</b> and <b>$</b> to match respectively (in addition to the normal behavior) the empty string after a newline, and the empty string before a newline. There are special character sequences (\` and \') which always match the beginning or the end of the buffer. <b>M</b> stands for <b>multi-line</b>. 
+          </p>
+        </li>
+      </ul>
+
+      <p>
+        If no addresses are given, then all lines are matched; if one address is given, then only lines matching that address are matched.
+      </p>
+      <p>
+        An address range can be specified by specifying two addresses separated by a comma (,). An address range matches lines starting from where the first address matches, and continues until the second address matches (inclusively).
+      </p>
+      <p>
+        If the second address is a regexp, then checking for the ending match will start with the line following the line which matched the first address: a range will always span at least two lines (except of course if the input stream ends).
+      </p>
+      <p>
+        If the second address is a number less than (or equal to) the line matching the first address, then only the one line is matched.
+      </p>
+      <p>
+        GNU sed also supports some special two-address forms; all these are GNU extensions:
+      </p>
+
+      <ul>
+        <li>
+          <p>
+            <code>0,/regexp/</code><br/>
+            A line number of 0 can be used in an address specification like <code>0,/regexp/</code> so that sed will try to match <b>regexp</b> in the first input line too. In other words, <code>0,/regexp/</code> is similar to <code>1,/regexp/</code>, except that if <b>addr2</b> matches the very first line of input the <code>0,/regexp/</code> form will consider it to end the range, whereas the <code>1,/regexp/</code> form will match the beginning of its range and hence make the range span up to the <b>second</b> occurrence of the regular expression.
+          </p>
+          <p>
+            Note that this is the only place where the 0 address makes sense; there is no 0-th line and commands which are given the 0 address in any other way will give an error.
+          </p>
+          </li>
+        <li>
+          <p>
+            <code>addr1,+N</code><br/>
+            Matches <b>addr1</b> and the <b>N</b> lines following <b>addr1</b>.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>addr1,~N</code><br/>
+            Matches <b>addr1</b> and the lines following <b>addr1</b> until the next line whose input line number is a multiple of <b>N</b>. 
+          </p>
+        </li>
+      </ul>
+      <p>
+        Appending the ! character to the end of an address specification negates the sense of the match. That is, if the ! character follows an address range, then only lines which do <b>not</b> match the address range will be selected. This also works for singleton addresses, and, perhaps perversely, for the null address. 
+      </p>
+
+    </div>
+
     <div id="programs-re" class="container-fluid manual-header">
-      <h1>2.1. Sed Regular Expressions</h1>
-      <table class='table table-bordered table-condensed'><tbody><tr>
-      <td> <code>^</code> </td>
-      <td>matches the beginning of the line </td>
-      </tr><tr>
-      <td> <code>$</code> </td>
-      <td>matches the end of the line </td>
-      </tr><tr>
-      <td><code>.</code></td>
-      <td>Matches any single character</td>
-      </tr><tr>
-      <td><code>(character)*</code></td>
-      <td>match arbitrarily many occurences of (character)</td>
-      </tr><tr>
-      <td><code>(character)?</code></td>
-      <td>Match 0 or 1 instance of (character)</td>
-      </tr><tr>
-      <td><code>[abcdef]</code></td>
-      <td>Match any character enclosed in [] (in this instance, a b c d e or f)
-      ranges of characters such as <code>[a-z]</code> are permitted.
-      </td>
-      </tr><tr>
-      <td><code>[^abcdef]</code></td>
-      <td>Match any character <em>NOT</em> enclosed in [] (in this instance, any character other than a b c d e or f)</td>
-      </tr><tr>
-      <td><code>(character)\{m,n\}</code></td>
-      <td>Match m-n repetitions of (character)</td>
-      </tr><tr>
-      <td><code>(character)\{m,\}</code></td>
-      <td>Match m or more repetitions of (character)</td>
-      </tr><tr>
-      <td><code>(character)\{,n\}</code></td>
-      <td>Match n or less (possibly 0) repetitions of (character)</td>
-      </tr><tr>
-      <td><code>(character)\{n\}</code></td>
-      <td>Match exactly n repetitions of (character)</td>
-      </tr><tr>
-      <td><code>\(expression\)</code></td>
-      <td>Group operator</td>
-      </tr><tr>
-      <td><code>\n</code></td>
-      <td>Backreference - matches nth group</td>
-      </tr><tr>
-      <td><code>expression1\|expression2</code></td>
-      <td>Matches expression1 or expression 2
-      </td>
-      </tr></tbody></table>
+      <h1>2.2. Regular Expression Syntax</h1>
+      <p>
+        To know how to use sed, people should understand regular expressions (<b>regexp</b> for short). A regular expression is a pattern that is matched against a subject string from left to right. Most characters are <b>ordinary</b>: they stand for themselves in a pattern, and match the corresponding characters in the subject. As a trivial example, the pattern 
+      </p>
+      <p><code>The quick brown fox</code></p>
+      <p>
+        matches a portion of a subject string that is identical to itself. The power of regular expressions comes from the ability to include alternatives and repetitions in the pattern. These are encoded in the pattern by the use of <b>special characters</b>, which do not stand for themselves but instead are interpreted in some special way. Here is a brief description of regular expression syntax as used in sed. 
+      </p>
+
+
+      <ul>
+        <li>
+          <p>
+            <code>char</code><br/>
+            A single ordinary character matches itself.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>*</code><br/>
+            Matches a sequence of zero or more instances of matches for the preceding regular expression, which must be an ordinary character, a special character preceded by \, a ., a grouped regexp (see below), or a bracket expression. As a GNU extension, a postfixed regular expression can also be followed by *; for example, a** is equivalent to a*. POSIX 1003.1-2001 says that * stands for itself when it appears at the start of a regular expression or subexpression, but many nonGNU implementations do not support this and portable scripts should instead use \* in these contexts.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>\+</code><br/>
+            As *, but matches one or more. It is a GNU extension.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>\?</code><br/>
+            As *, but only matches zero or one. It is a GNU extension.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>\{i\}</code><br/>
+            As *, but matches exactly <b>i</b> sequences (<b>i</b> is a decimal integer; for portability, keep it between 0 and 255 inclusive).
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>\{i,j\}</code><br/>
+            Matches between <b>i</b> and <b>j</b>, inclusive, sequences.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>\{i,\}</code><br/>
+            Matches more than or equal to <b>i</b> sequences.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>\(regexp\)</code><br/>
+              Groups the inner <b>regexp</b> as a whole, this is used to:
+              <ul>
+                <li>
+                  Apply postfix operators, like \(abcd\)*: this will search for zero or more whole sequences of ‘abcd’, while abcd* would search for ‘abc’ followed by zero or more occurrences of ‘d’. Note that support for \(abcd\)* is required by POSIX 1003.1-2001, but many non-GNU implementations do not support it and hence it is not universally portable.
+                </li>
+                <li>
+                  Use <b>back references</b> (see below). 
+                </li>
+              </ul>
+
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>.</code><br/>
+            Matches any character, including newline.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>^</code><br/>
+            Matches the null string at beginning of the pattern space, i.e. what appears after the circumflex must appear at the beginning of the pattern space.
+          </p>
+          <p>
+            In most scripts, pattern space is initialized to the content of each line (see How sed works). So, it is a useful simplification to think of ^#include as matching only lines where ‘#include’ is the first thing on line—if there are spaces before, for example, the match fails. This simplification is valid as long as the original content of pattern space is not modified, for example with an s command.
+          </p>
+          <p>
+            ^ acts as a special character only at the beginning of the regular expression or subexpression (that is, after \( or \|). Portable scripts should avoid ^ at the beginning of a subexpression, though, as POSIX allows implementations that treat ^ as an ordinary character in that context.
+            </p>
+        </li>
+        <li>
+          <p>
+            <code>$</code><br/>
+            It is the same as ^, but refers to end of pattern space. $ also acts as a special character only at the end of the regular expression or subexpression (that is, before \) or \|), and its use at the end of a subexpression is not portable.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>[list]</code>
+            <code>[^list]</code><br/>
+            Matches any single character in list: for example, <code>[aeiou]</code> matches all vowels. A list may include sequences like <b>char1-char2</b>, which matches any character between (inclusive) <b>char1</b> and <b>char2</b>.
+          </p>
+          <p>
+            A leading ^ reverses the meaning of list, so that it matches any single character <b>not</b> in list. To include ] in the list, make it the first character (after the ^ if needed), to include - in the list, make it the first or last; to include ^ put it after the first character.
+          </p>
+          <p>
+            The characters $, *, ., [, and \ are normally not special within list. For example, <code>[\*]</code> matches either ‘\’ or ‘*’, because the \ is not special here. However, strings like <code>[.ch.]</code>, <code>[=a=]</code>, and <code>[:space:]</code> are special within list and represent collating symbols, equivalence classes, and character classes, respectively, and [ is therefore special within list when it is followed by ., =, or :. Also, when not in POSIXLY_CORRECT mode, special escapes like \n and \t are recognized within list. 
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>regexp1\|regexp2</code><br/>
+            Matches either <b>regexp1</b> or <b>regexp2</b>. Use parentheses to use complex alternative regular expressions. The matching process tries each alternative in turn, from left to right, and the first one that succeeds is used. It is a GNU extension.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>regexp1regexp2</code><br/>
+             Matches the concatenation of <b>regexp1</b> and <b>regexp2</b>. Concatenation binds more tightly than \|, ^, and $, but less tightly than the other regular expression operators.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>\digit</code><br/>
+            Matches the <b>digit</b>-th \(...\) parenthesized subexpression in the regular expression. This is called a <b>back reference</b>. Subexpressions are implicity numbered by counting occurrences of \( left-to-right.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>\n</code><br/>
+            Matches the newline character.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>\char</code><br/>
+            Matches <b>char</b>, where <b>char</b> is one of $, *, ., [, \, or ^. Note that the only C-like backslash sequences that you can portably assume to be interpreted are \n and \\; in particular \t is not portable, and matches a ‘t’ under most implementations of sed, rather than a tab character. 
+          </p>
+        </li>
+      </ul>
+
+      <p>
+        Note that the regular expression matcher is greedy, i.e., matches are attempted from left to right and, if two or more matches are possible starting at the same character, it selects the longest. 
+      </p>
+
     </div>
-    <div id="example1" class="container-fluid manual-header">
-      <h1>TODO</h1>
-      <p>hello</p>
-    </div>
-    <div id="example2" class="container-fluid manual-header">
+    <div id="practice" class="container-fluid manual-header">
       <h1>TODO</h1>
       <p>hello</p>
     </div>

@@ -66,6 +66,9 @@
     .then(function( stdin, args ) {
       var rows = args[0].split(/\r\n|\r|\n/).length;
       $("#sed-cmd").val(args[0]).attr("rows", rows).css({"height": rows > 1 ? "auto" : "34px"});
+      // document.ready() callbacks are called in the order they were registered. 
+      // If you register your testing callback first, it will be called first
+      // keyup() listener is registered earlier in this file
       $("#sed-stdin").val(stdin[0]).keyup();
     })
     .fail(function( e ) {
