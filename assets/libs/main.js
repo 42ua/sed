@@ -95,7 +95,7 @@
       })
     ).done(function(response) {
       var url = response.html_url,
-          my = $(location).attr('href').replace(/#$/, "") + '?gist=' + response.id;
+          my = $(location).attr('href').replace(/(#|\?).*$/, "") + '?gist=' + response.id;
       $(".user-errors-here").append( "<div class='alert alert-success alert-dismissible fade in' role=alert>" + 
         "<button type=button class=close data-dismiss=alert aria-label=Close><span aria-hidden=true>&times;</span></button>" + 
         "<strong>GIST:</strong> <a href='" + url + "'>" + response.id + "</a> | " + 
