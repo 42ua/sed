@@ -34,7 +34,8 @@
       #programs {background-color: #331d5b;}
       #programs-lines {background-color: #7f4c00;}
       #programs-re {background-color: #005e6a;}
-      #practice {background-color: #009688;}
+      div[id^="practice-"] { background-color: #004b44;}
+      #further-reading {background-color: #e7e7e7;}
     </style>
   </head>
 
@@ -61,7 +62,19 @@
                   <li><a href="#programs-re">Regular Expressions</a></li>
                 </ul>
               </li>
-              <li><a href="#practice">Practice</a></li>
+
+              <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Practice <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#practice-def">Default Output</a></li>
+                  <li><a href="#practice-prn">Printing Lines</a></li>
+                  <li><a href="#practice-adr">Address Ranges</a></li>
+                  <li><a href="#practice-del">Deleting Text</a></li>
+                  <li><a href="#practice-sub">Substituting Text</a></li>
+                  <li><a href="#practice-ref">Referencing Matched Text</a></li>
+                </ul>
+              </li>
+
+              <li><a href="#further-reading">Further Reading</a></li>
             </ul>
           </div>
         </div>
@@ -307,16 +320,19 @@
           <p>
             <code>\(regexp\)</code><br/>
               Groups the inner <b>regexp</b> as a whole, this is used to:
-              <ul>
-                <li>
-                  Apply postfix operators, like \(abcd\)*: this will search for zero or more whole sequences of ‘abcd’, while abcd* would search for ‘abc’ followed by zero or more occurrences of ‘d’. Note that support for \(abcd\)* is required by POSIX 1003.1-2001, but many non-GNU implementations do not support it and hence it is not universally portable.
-                </li>
-                <li>
-                  Use <b>back references</b> (see below). 
-                </li>
-              </ul>
-
           </p>
+          <ul>
+            <li>
+              <p>
+                Apply postfix operators, like \(abcd\)*: this will search for zero or more whole sequences of ‘abcd’, while abcd* would search for ‘abc’ followed by zero or more occurrences of ‘d’. Note that support for \(abcd\)* is required by POSIX 1003.1-2001, but many non-GNU implementations do not support it and hence it is not universally portable.
+              </p>
+            </li>
+            <li>
+              <p>
+                Use <b>back references</b> (see below).
+              </p>
+            </li>
+          </ul>
         </li>
         <li>
           <p>
@@ -392,14 +408,177 @@
       </p>
 
     </div>
-    <div id="practice" class="container-fluid manual-header">
-      <h1>TODO</h1>
-      <p>hello</p>
+    <div id="practice-def" class="container-fluid manual-header">
+      <h1>Default Output</h1>
+      <p>
+        <a href='index.html?gist=a794d768907cca6c2e97bc1ae2706147' rel="nofollow" target="_blank">GIST</a> | sed sends its results to the screen by default
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/a794d768907cca6c2e97bc1ae2706147.js"></script>
+      </p>
     </div>
+    <div id="practice-prn" class="container-fluid manual-header">
+      <h1>Printing Lines</h1>
+      <p>
+        <a href='index.html?gist=bcecf6e4e20199d5851ba016a4fd163c' rel="nofollow" target="_blank">GIST</a> | sed has printed each line twice now. This is because it automatically prints each line, and then we've told it to print explicitly with the <code>p</code> command.
+      </p>
+      <p>
+        <script src="https://gist.github.com/anonymous/bcecf6e4e20199d5851ba016a4fd163c.js"></script>
+      </p>
 
+      <p><a href='index.html?gist=1390f7965021a31bbe435cb2ba0242f7' rel="nofollow" target="_blank">GIST</a> | We can clean up the results by passing the <code>-n</code> option to sed, which suppresses the automatic printing</p>
+      <p>
+        <script src="https://gist.github.com/anonymous/1390f7965021a31bbe435cb2ba0242f7.js"></script>
+      </p>
+    </div>
+    <div id="practice-adr" class="container-fluid manual-header">
+      <h1>Address Ranges</h1>
+      <p>
+        <a href='index.html?gist=a247498954df9d2bfb00d33222f59ae7' rel="nofollow" target="_blank">GIST</a> | Let's modify the output by only having sed print the first line.
+      </p>
+      <p>
+        <script src="https://gist.github.com/anonymous/a247498954df9d2bfb00d33222f59ae7.js"></script>
+      </p>
+
+      <p><a href='index.html?gist=8f160094063d22771486e4b8958c3f63' rel="nofollow" target="_blank">GIST</a> | We've just given an address range to sed. If we give sed an address, it will only perform the commands that follow on those lines. In this example, we've told sed to print line 1 through line 5.</p>
+      <p>
+        <script src="https://gist.github.com/anonymous/8f160094063d22771486e4b8958c3f63.js"></script>
+      </p>
+
+      <p><a href='index.html?gist=93f1ead7166f726b70e429ca11569696' rel="nofollow" target="_blank">GIST</a> | This will result in the same output, because we've told sed to start at line 1 and then operate on the next 4 lines as well.</p>
+      <p>
+        <script src="https://gist.github.com/anonymous/93f1ead7166f726b70e429ca11569696.js"></script>
+      </p>
+
+      <p><a href='index.html?gist=3b834e9645275075f1e759a87e9a0018' rel="nofollow" target="_blank">GIST</a> | If we want to print every other line, we can specify the interval after the <code>~</code> character. The following line will print every other line starting with line 1.</p>
+      <p>
+        <script src="https://gist.github.com/anonymous/3b834e9645275075f1e759a87e9a0018.js"></script>
+      </p>
+    </div>
+    <div id="practice-del" class="container-fluid manual-header">
+      <h1>Deleting Text</h1>
+      <p>
+        <a href='index.html?gist=f8a131b1b241f04ed935b8247b942367' rel="nofollow" target="_blank">GIST</a> | We can easily perform text deletion where we previously were specifying text printing by changing the <code>p</code> command to the <code>d</code> command.
+
+        We no longer need the <code>-n</code> command because with the delete command, sed will print everything that is not deleted, which will help us see what's going on.
+
+        We can modify the last command from the previous section to make it delete every other line starting with the first. The result is that we should be given every line we were not given last time.
+      </p>
+      <p>
+        <script src="https://gist.github.com/anonymous/f8a131b1b241f04ed935b8247b942367.js"></script>
+      </p>
+    </div>
+    <div id="practice-sub" class="container-fluid manual-header">
+      <h1>Substituting Text</h1>
+      <p>
+        <a href='index.html?gist=42a90cf22cd2871bacc3269f98a134cc' rel="nofollow" target="_blank">GIST</a> | Now let's substitute the expression "o" with "@"
+      </p>
+      <p>
+        <script src="https://gist.github.com/anonymous/42a90cf22cd2871bacc3269f98a134cc.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=c996e18cdca1bca37d238a6661c4e5a3' rel="nofollow" target="_blank">GIST</a> | To make sed replace every instance of "o" instead of just the first on each line, we can pass an optional <code>g</code> flag to the substitute command.
+      </p>
+      <p>
+        <script src="https://gist.github.com/anonymous/c996e18cdca1bca37d238a6661c4e5a3.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=e2bb61a432dd41455d56b3b998f0efba' rel="nofollow" target="_blank">GIST</a> | If we only wanted to change the second instance of "o" that sed finds on each line, then we could use the number <code>2</code> instead of the <code>g</code>.
+      </p>
+      <p>
+        <script src="https://gist.github.com/anonymous/e2bb61a432dd41455d56b3b998f0efba.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=88f8b1b3f5f3040d3c5c9aa50d6252f9' rel="nofollow" target="_blank">GIST</a> | If we only want to see which lines were substituted, we can use the <code>-n</code> option again to suppress automatic printing.
+We can then pass the <code>p</code> flag to the substitute command to print lines where substitution took place..
+      </p>
+      <p>
+        <script src="https://gist.github.com/anonymous/88f8b1b3f5f3040d3c5c9aa50d6252f9.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=583764fb194580632ad5ce71856cd230' rel="nofollow" target="_blank">GIST</a> | If we want the search process to ignore case, we can pass it the <code>i</code> flag.
+      </p>
+      <p>
+        <script src="https://gist.github.com/anonymous/583764fb194580632ad5ce71856cd230.js"></script>
+      </p>
+
+    </div>
+    <div id="practice-ref" class="container-fluid manual-header">
+      <h1>Referencing Matched Text</h1>
+      <p>
+        <a href='index.html?gist=21fbe495b08b8c58b7417fbb32f3b45f' rel="nofollow" target="_blank">GIST</a> | If we wish to find more complex patterns with regular expressions, we have a number of different methods of referencing the matched pattern in the replacement text.
+
+        For instance, if we want to match the from the beginning of the line to "on" we can use the expression.
+      </p>
+      <p>
+        <script src="https://gist.github.com/anonymous/21fbe495b08b8c58b7417fbb32f3b45f.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=728aea902400e7cc2b2060b729b68fc8' rel="nofollow" target="_blank">GIST</a> | Since you don't know the exact phrase that will match in the search string, you can use the "&amp;" character to represent the matched text in the replacement string.
+
+        This example shows how to put parentheses around the matched text.
+      </p>
+      <p>
+        <script src="https://gist.github.com/anonymous/728aea902400e7cc2b2060b729b68fc8.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=d48469cba0623c095c31bdee4a6c7414' rel="nofollow" target="_blank">GIST</a> | A more flexible way of referencing matched text is to use escaped parentheses to group sections of matched text.
+
+        Every group of search text marked with parentheses can be referenced by an escaped reference number. For instance, the first parentheses group can be referenced with "\1", the second with "\2" and so on.
+
+        In this example, we'll switch the first two words of each line.
+      </p>
+      <p>
+        <script src="https://gist.github.com/anonymous/d48469cba0623c095c31bdee4a6c7414.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=b7c22293fc12f1bf6c0eeb32fd509b83' rel="nofollow" target="_blank">GIST</a> | As you can see, previous results are not perfect. For instance, the second line skips the first word because it has a character not listed in our character set. Similarly, it treated "they'll" as two words in the fifth line.
+
+        Let's improve the regular expression to be more accurate
+      </p>
+      <p>
+        <script src="https://gist.github.com/anonymous/b7c22293fc12f1bf6c0eeb32fd509b83.js"></script>
+      </p>
+
+    </div>
+    <div id="further-reading" class="container-fluid manual-header">
+
+      <h2 class="text-center text-primary">Further Reading</h2>
+
+      <ul class="text-center list-unstyled">
+        <li>
+          <p>
+            <a href='https://www.digitalocean.com/community/tutorials/the-basics-of-using-the-sed-stream-editor-to-manipulate-text-in-linux' rel="nofollow">The Basics of Using the Sed Stream Editor to Manipulate Text in Linux</a>
+          </p>
+        </li>
+        <li>
+          <p>
+            <a href='https://www.digitalocean.com/community/tutorials/intermediate-sed-manipulating-streams-of-text-in-a-linux-environment' rel="nofollow">Intermediate Sed: Manipulating Streams of Text in a Linux Environment</a>
+          </p>
+        </li>
+        <li>
+          <p>
+            <a href='http://www.grymoire.com/Unix/Sed.html' rel="nofollow">Sed - An Introduction and Tutorial by Bruce Barnett</a>
+          </p>
+        </li>
+        <li>
+          <p>
+            <a href='http://sed.sourceforge.net/sed1line.txt' rel="nofollow">USEFUL ONE-LINE SCRIPTS FOR SED</a>
+          </p>
+        </li>
+      </ul>
+
+    </div>
     <footer class="footer">
       <div class="container-fluid text-muted text-center">
-        Designed and maintained by <a href="mailto:o.mazko%20%5Bat%5D%20mail.ru?subject=sed.js"  rel="nofollow" onmouseover="var split = this.href.split('?');  split[0] = split[0].replace('%20%5Bat%5D%20','@'); this.href = split.join('?');">Oleg Mazko</a>
+        Designed and maintained with ❤ by <a href="mailto:o.mazko%20%5Bat%5D%20mail.ru?subject=sed.js" rel="nofollow" onmouseover="var split = this.href.split('?');  split[0] = split[0].replace('%20%5Bat%5D%20','@'); this.href = split.join('?');">Oleg Mazko</a>
       </div>
     </footer>
 

@@ -89,6 +89,7 @@
         "description": "sed.js",
         "files": {
           "stdin": {"content": $("#sed-stdin").val()},
+          "stdout": {"content": $("#sed-stdout").val()},
           "args": {"content": $("#sed-cmd").val()}
         }
       })
