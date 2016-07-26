@@ -99,7 +99,7 @@
       $(".user-errors-here").append( "<div class='alert alert-success alert-dismissible fade in' role=alert>" + 
         "<button type=button class=close data-dismiss=alert aria-label=Close><span aria-hidden=true>&times;</span></button>" + 
         "<strong>GIST:</strong> <a href='" + url + "'>" + response.id + "</a> | " + 
-        "<strong>Share:</strong> <a href='" + my + "'>me</a><br/>" + 
+        "<strong>Share:</strong> <a href='" + my + "'>me</a>" + 
         "</div>"
       );
     }).fail(function( e ) {
