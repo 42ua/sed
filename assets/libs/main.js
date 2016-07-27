@@ -1,38 +1,73 @@
  "use strict";
 
-(function() {
+$(function() {
 
-  var parseId;
+  (function() {
 
-  function parse() {
-    if (parseId) {
-      clearTimeout(parseId);
+    var parseId;
+
+    function parse() {
+      if (parseId) {
+        clearTimeout(parseId);
+      }
+
+      parseId = setTimeout(function () {
+        var input = $("#sed-stdin").val(),
+            args = $("#sed-cmd").val(),
+            output = fn_gnu_sed(input, args);
+        $("#sed-stdout").val(output.replace(/\n$/, ""));
+      }, 333);
     }
 
-    parseId = setTimeout(function () {
-      var input = $("#sed-stdin").val(),
-          args = $("#sed-cmd").val(),
-          output = fn_gnu_sed(input, args);
-      $("#sed-stdout").val(output.replace(/\n$/, ""));
-    }, 333);
-  }
-  $(function() {
     $("#sed-stdin").keyup(parse);
     $("#sed-cmd").keyup(parse);
-  });
-})();
 
-/* options */
+  })();
 
-(function() {
-  $(".sed-options.dropdown-menu li a").click(function() {
-    var val = $(this).text();
-    var newVal = ['--help', '--version'].indexOf(val) > -1 
-      ? val
-      : val + ' ' + $("#sed-cmd").val();
-    $("#sed-cmd").val(newVal).keyup();
-  });
-})();
+  /* options */
+
+  (function() {
+    $(".sed-options.dropdown-menu li a").click(function() {
+      var val = $(this).text();
+      var newVal = ['--help', '--version'].indexOf(val) > -1 
+        ? val
+        : val + ' ' + $("#sed-cmd").val();
+      $("#sed-cmd").val(newVal).keyup();
+    });
+  })();
+
+  /* Gist API */
+
+  (function() {
+    $("li a.gist-api").click(function() {
+      $.post('https://api.github.com/gists', 
+        JSON.stringify({
+          "description": "sed.js",
+          "files": {
+            "stdin": {"content": $("#sed-stdin").val()},
+            "stdout": {"content": $("#sed-stdout").val()},
+            "args": {"content": $("#sed-cmd").val()}
+          }
+        })
+      ).done(function(response) {
+        var url = response.html_url,
+            my = $(location).attr('href').replace(/(#|\?).*$/, "") + '?gist=' + response.id;
+        $(".user-errors-here").append( "<div class='alert alert-success alert-dismissible fade in' role=alert>" + 
+          "<button type=button class=close data-dismiss=alert aria-label=Close><span aria-hidden=true>&times;</span></button>" + 
+          "<strong>GIST:</strong> <a href='" + url + "'>" + response.id + "</a> | " + 
+          "<strong>Share:</strong> <a href='" + my + "'>me</a>" + 
+          "</div>"
+        );
+      }).fail(function( e ) {
+        $(".user-errors-here").append( "<div class='alert alert-danger alert-dismissible fade in' role=alert>" + 
+          "<button type=button class=close data-dismiss=alert aria-label=Close><span aria-hidden=true>&times;</span></button>" + 
+          "<strong>Holy guacamole!</strong> " + [e.status, e.statusText] + "</div>"
+        );
+      });
+    });
+  })();
+
+});
 
 /* Gist load or default */
 
@@ -78,35 +113,4 @@
       );
     });
   }
-})();
-
-/* Gist API */
-
-(function() {
-  $("li a.gist-api").click(function() {
-    $.post('https://api.github.com/gists', 
-      JSON.stringify({
-        "description": "sed.js",
-        "files": {
-          "stdin": {"content": $("#sed-stdin").val()},
-          "stdout": {"content": $("#sed-stdout").val()},
-          "args": {"content": $("#sed-cmd").val()}
-        }
-      })
-    ).done(function(response) {
-      var url = response.html_url,
-          my = $(location).attr('href').replace(/(#|\?).*$/, "") + '?gist=' + response.id;
-      $(".user-errors-here").append( "<div class='alert alert-success alert-dismissible fade in' role=alert>" + 
-        "<button type=button class=close data-dismiss=alert aria-label=Close><span aria-hidden=true>&times;</span></button>" + 
-        "<strong>GIST:</strong> <a href='" + url + "'>" + response.id + "</a> | " + 
-        "<strong>Share:</strong> <a href='" + my + "'>me</a>" + 
-        "</div>"
-      );
-    }).fail(function( e ) {
-      $(".user-errors-here").append( "<div class='alert alert-danger alert-dismissible fade in' role=alert>" + 
-        "<button type=button class=close data-dismiss=alert aria-label=Close><span aria-hidden=true>&times;</span></button>" + 
-        "<strong>Holy guacamole!</strong> " + [e.status, e.statusText] + "</div>"
-      );
-    });
-  });
 })();
