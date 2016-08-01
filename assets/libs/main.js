@@ -82,35 +82,33 @@ $(function() {
       return decodeURIComponent(results[2].replace(/\+/g, " "));
   }
 
-  var user = getParameterByName('user') || 'anonymous',
-    gistId = getParameterByName('gist') || 'a231d7675d0bf638c7f399c76d80f32b';
+  var gistId = getParameterByName('gist') || 'a231d7675d0bf638c7f399c76d80f32b',
+      stdinGist = getParameterByName('stdin') || 'stdin',
+      argsGist = getParameterByName('args') || 'args',
+      doc_ready = $.Deferred();
 
-  if (user && gistId) {
-    var stdinGist = getParameterByName('stdin') || 'stdin',
-        argsGist = getParameterByName('args') || 'args',
-        doc_ready = $.Deferred();
+  /* http://stackoverflow.com/q/10326398 */
 
-    /* http://stackoverflow.com/q/10326398 */
+  $(doc_ready.resolve);
 
-    $(doc_ready.resolve);
+  $.when( 
+    $.get( 'https://api.github.com/gists/' + gistId),
+    doc_ready )
+  .then(function( data ) {
+    var args = data[0].files[argsGist].content, 
+        rows = args.split(/\r\n|\r|\n/).length,
+        stdin = data[0].files[stdinGist].content;
+    $("#sed-cmd").val(args).attr("rows", rows).css({"height": rows > 1 ? "auto" : "34px"});
+    // document.ready() callbacks are called in the order they were registered. 
+    // If you register your testing callback first, it will be called first
+    // keyup() listener is registered earlier in this file
+    $("#sed-stdin").val(stdin).keyup();
+  })
+  .fail(function( e ) {
+    $(".user-errors-here").append( "<div class='alert alert-danger alert-dismissible fade in' role=alert>" + 
+      "<button type=button class=close data-dismiss=alert aria-label=Close><span aria-hidden=true>&times;</span></button>" + 
+      "<strong>Holy guacamole!</strong> " + [e.status, e.statusText] + "</div>"
+    );
+  });
 
-    $.when( 
-      $.get( 'https://gist.githubusercontent.com/' + user + '/' + gistId + '/raw/' + stdinGist ), 
-      $.get( 'https://gist.githubusercontent.com/' + user + '/' + gistId + '/raw/' + argsGist ),
-      doc_ready )
-    .then(function( stdin, args ) {
-      var rows = args[0].split(/\r\n|\r|\n/).length;
-      $("#sed-cmd").val(args[0]).attr("rows", rows).css({"height": rows > 1 ? "auto" : "34px"});
-      // document.ready() callbacks are called in the order they were registered. 
-      // If you register your testing callback first, it will be called first
-      // keyup() listener is registered earlier in this file
-      $("#sed-stdin").val(stdin[0]).keyup();
-    })
-    .fail(function( e ) {
-      $(".user-errors-here").append( "<div class='alert alert-danger alert-dismissible fade in' role=alert>" + 
-        "<button type=button class=close data-dismiss=alert aria-label=Close><span aria-hidden=true>&times;</span></button>" + 
-        "<strong>Holy guacamole!</strong> " + [e.status, e.statusText] + "</div>"
-      );
-    });
-  }
 })();
