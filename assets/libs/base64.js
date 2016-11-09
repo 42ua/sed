@@ -28,7 +28,7 @@ $(function() {
       }
     }
 
-    var parseId;
+    var parseId, cacheInput, cacheArgs;
 
     function parse() {
       if (parseId) {
@@ -37,10 +37,13 @@ $(function() {
 
       parseId = setTimeout(function () {
         var input = b64DecodeUserFriendly($("#sed-base64-stdin").val()),
-            args = $("#sed-cmd").val(),
-            output = fn_gnu_sed(input, args);
-        $("#sed-stdin").val(input);
-        $("#sed-stdout").val(output.replace(/\n$/, ""));
+            args = $("#sed-cmd").val();
+        if (cacheInput !== input || cacheArgs !== args){
+          cacheInput = input;
+          cacheArgs = args;
+          $("#sed-stdin").val(input);
+          $("#sed-stdout").val(fn_gnu_sed(input, args).replace(/\n$/, ""));
+        }
       }, 333);
     }
 
