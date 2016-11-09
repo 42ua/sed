@@ -19,8 +19,8 @@ $(function() {
       }, 333);
     }
 
-    $("#sed-stdin").keyup(parse);
-    $("#sed-cmd").keyup(parse);
+    $("#sed-stdin").on('change keyup input', parse);
+    $("#sed-cmd").on('change keyup input', parse);
 
   })();
 
