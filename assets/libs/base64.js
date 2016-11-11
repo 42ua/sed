@@ -47,8 +47,8 @@ $(function() {
       }, 333);
     }
 
-    $("#sed-base64-stdin").on('change keyup input', parse);
-    $("#sed-cmd").on('change keyup input', parse);
+    $("#sed-base64-stdin").on('keyup input', parse);
+    $("#sed-cmd").on('keyup input', parse);
 
   })();
 
