@@ -68,8 +68,13 @@ $(function() {
 
   (function() {
     $("li a.gist-api").click(function() {
-      $.post('https://api.github.com/gists', 
-        JSON.stringify({
+      $.ajax({
+        type: "POST",
+        url: 'https://api.github.com/gists',
+        headers: {
+          "Authorization": 'Basic cHJvaW90OjYyMGQ0NDFjMGU5MWNmYjBlY2MwMzk3MjM3MjkxNzM2ZDcwNDA2ZGE=',
+        },
+        data: JSON.stringify({
           "description": "sed.js",
           "files": {
             "stdin": {"content": $("#sed-base64-stdin").val()},
@@ -77,7 +82,7 @@ $(function() {
             "args": {"content": $("#sed-cmd").val()}
           }
         })
-      ).done(function(response) {
+      }).done(function(response) {
         var url = response.html_url,
             my = $(location).attr('href').replace(/(#|\?).*$/, "") + '?gist=' + response.id;
         $(".user-errors-here").append( "<div class='alert alert-success alert-dismissible fade in' role=alert>" + 
