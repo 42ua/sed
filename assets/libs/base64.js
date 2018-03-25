@@ -72,7 +72,7 @@ $(function() {
         type: "POST",
         url: 'https://api.github.com/gists',
         headers: {
-          "Authorization": 'Basic cHJvaW90OjYyMGQ0NDFjMGU5MWNmYjBlY2MwMzk3MjM3MjkxNzM2ZDcwNDA2ZGE=',
+          "Authorization": 'Basic bWF6a29ib3Q6MWY1ZjAxODgzNTQzMjU4Yjc5NjdjNmYzODcxZmI0NDIzZDRiM2E0MA==',
         },
         data: JSON.stringify({
           "description": "sed.js",
