@@ -68,28 +68,35 @@ $(function() {
 
   (function() {
     $("li a.gist-api").click(function() {
-      var formData = new FormData();
-      formData.append("file",  new File([$("#sed-base64-stdin").val()], 'base64stdin', {type: 'text/plain'}));
-      formData.append("file",  new File([$("#sed-stdin").val()], 'stdin', {type: 'text/plain'}));
-      formData.append("file",  new File([$("#sed-stdout").val()], 'stdout', {type: 'text/plain'}));
-      formData.append("file",  new File([$("#sed-cmd").val()], 'cmd', {type: 'text/plain'}));
-      formData.append('title', 'base64sed.js');
       $.ajax({
         cache: false,
         contentType: false,
         processData: false,
         type: "POST",
-        url: 'https://api.bitbucket.org/2.0/snippets/sedjs',
+        url: 'https://api.github.com/gists',
         headers: {
-          'Authorization': 'Basic bWF6a29ib3Q6QVRCQnNRblEzejU0Qks1QUJlUXQ0ejJYVU5hRzIxNjhBNTlC'
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+          'Authorization': atob(
+            'QmVhcmVyIGdpdGh1Yl9wYXRfMTFCVFJJNENBMEpuWDhTUVJVV000ZF9oemxrOERISTh' +
+            'sNzJvSEhvdHBPeWRXMWV6cE5yQ3V4SDJsanljUWFucVR5UkxYNERGVUY0ZHpseUYxUQ==')
         },
-        data: formData,
+        data: JSON.stringify({
+          "description": "base64sed.js",
+          "public": false,
+          "files": {
+            "stdin": {"content": $("#sed-base64-stdin").val()},
+            "stdin_": {"content": $("#sed-stdin").val()},
+            "stdout": {"content": $("#sed-stdout").val()},
+            "args": {"content": $("#sed-cmd").val()}
+          }
+        })
       }).done(function(response) {
-        var url = response.links.html.href,
-            my = $(location).attr('href').replace(/(#|\?).*$/, "") + '?snippet=' + response.id;
+        var url = response.html_url,
+            my = $(location).attr('href').replace(/(#|\?).*$/, "") + '?gist=' + response.id;
         $(".user-errors-here").append( "<div class='alert alert-success alert-dismissible fade in' role=alert>" + 
           "<button type=button class=close data-dismiss=alert aria-label=Close><span aria-hidden=true>&times;</span></button>" + 
-          "<strong>Snippet:</strong> <a href='" + url + "'>" + response.id + "</a> | " + 
+          "<strong>GIST:</strong> <a href='" + url + "'>" + response.id + "</a> | " + 
           "<strong>Share:</strong> <a href='" + my + "'>me</a>" + 
           "</div>"
         );
