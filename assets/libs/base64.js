@@ -108,8 +108,8 @@ $(function() {
 
 (function() {
   var params    = new URLSearchParams(window.location.search),
-      gistId    = params.get('gist'),
-      snippetId = params.get('snippet') || 'Lz666p',
+      gistId    = params.get('gist') || '14de45cc31aeb042f51aa9fe2ecf00be',
+      snippetId = params.get('snippet'),
       doc_ready = $.Deferred();
 
   /* http://stackoverflow.com/q/10326398 */
